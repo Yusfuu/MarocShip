@@ -1482,3 +1482,4 @@ anonymous user GET /api/admin/show?page=3 200 Mon, 31 Jan 2022 08:25:00 GMT ::1
 anonymous user GET /api/admin/show?page=4 200 Mon, 31 Jan 2022 08:25:01 GMT ::1
 anonymous user GET /api/admin/show?page=5 200 Mon, 31 Jan 2022 08:25:02 GMT ::1
 anonymous user GET /api/admin/show?page=5 304 Mon, 31 Jan 2022 08:25:34 GMT ::1
+anonymous user GET / 404 Fri, 04 Feb 2022 12:08:41 GMT ::1

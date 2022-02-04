@@ -1,14 +1,7 @@
 {
+  "extends": "tsconfig/server.json",
   "compilerOptions": {
-    "sourceMap": true,
-    "target": "ESNext",
-    "module": "CommonJS",
     "outDir": "build",
-    "strict": true,
-    "lib": ["esnext"],
-    "esModuleInterop": true,
-    "moduleResolution": "Node",
-    "incremental": true,
     "baseUrl": "src",
     "paths": {
       "@lib/*": ["lib/*"],
