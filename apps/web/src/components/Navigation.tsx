@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 type IAppProps = {};
 
-export const Navigation: FC<IAppProps> = () => {
+export const Navigation: FC<IAppProps> = ({ children }) => {
   return (
     <nav className='bg-gray-800'>
       <div className='mx-auto max-w-7xl px-2 sm:px-6 lg:px-8'>
@@ -59,31 +59,7 @@ export const Navigation: FC<IAppProps> = () => {
               />
             </div>
             <div className='hidden sm:ml-6 sm:block'>
-              <div className='flex space-x-4'>
-                <Link
-                  to='dashboard'
-                  className='rounded-md  px-3 py-2 bg-gray-900 text-sm font-medium text-white'>
-                  Dashboard
-                </Link>
-
-                <Link
-                  to='team'
-                  className='rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white'>
-                  Team
-                </Link>
-
-                <a
-                  href='#'
-                  className='rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white'>
-                  Projects
-                </a>
-
-                <a
-                  href='#'
-                  className='rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white'>
-                  Calendar
-                </a>
-              </div>
+              <div className='flex space-x-4'>{children}</div>
             </div>
           </div>
           <div className='absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0'>

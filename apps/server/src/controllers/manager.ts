@@ -1,21 +1,24 @@
-import { IDeliveryManager, IDriver, IUser } from "@interfaces/mongoose.types";
-import { DeliveryManager } from "@models/DeliveryManager";
-import { Driver } from "@models/Driver";
-import { Manager } from "@models/Manager";
-import { catchAsync } from "@utils/catchAsync";
-import { mail } from "@utils/mail";
-import { passwordCompare, passwordGenerator, passwordHash } from "@utils/password";
-import { Request, Response } from "express";
-import { error } from "@errors/index";
+import { IDeliveryManager, IDriver, IUser } from '@interfaces/mongoose.types';
+import { DeliveryManager } from '@models/DeliveryManager';
+import { Driver } from '@models/Driver';
+import { Manager } from '@models/Manager';
+import { catchAsync } from '@utils/catchAsync';
+import { mail } from '@utils/mail';
+import {
+  passwordCompare,
+  passwordGenerator,
+  passwordHash,
+} from '@utils/password';
+import { Request, Response } from 'express';
+import { error } from '@errors/index';
 
 // @route   POST api/manager/login
 // @desc    Login manager
 const login = catchAsync(async (req: Request, res: Response) => {
-
   const { email, password } = req.body;
 
   // get manager by email
-  const user: IUser = await Manager.findOne({ email }).catch(_ => _);
+  const user: IUser = await Manager.findOne({ email }).catch((_) => _);
 
   // conver user to json
   const manager = user ? user.toJSON() : null;
@@ -36,7 +39,7 @@ const login = catchAsync(async (req: Request, res: Response) => {
   delete manager?.password;
 
   //@ts-ignore
-  manager.role = "MANAGER";
+  manager.role = 'MANAGER';
 
   //@ts-ignore
   req.session.user = manager;
@@ -45,33 +48,41 @@ const login = catchAsync(async (req: Request, res: Response) => {
   return res.status(200).json({ payload: manager });
 });
 
-
 // @route   POST api/manager/create/deliverymanager
 // @desc    Create new delivery manager
-const createDeliveryManager = catchAsync(async (req: Request, res: Response) => {
-  const { name, email } = req.body;
-  const password = passwordGenerator();
-  const hash = await passwordHash(password);
+const createDeliveryManager = catchAsync(
+  async (req: Request, res: Response) => {
+    const { name, email } = req.body;
+    const password = passwordGenerator();
+    const hash = await passwordHash(password);
 
-  // @ts-ignore
-  const manager = req.user._id;
+    // @ts-ignore
+    const manager = req.session.user._id;
 
-  // create new delivery manager
-  const deliveryManager: IDeliveryManager = await DeliveryManager.create({ name, email, password: hash, manager });
+    // create new delivery manager
+    const deliveryManager: IDeliveryManager = await DeliveryManager.create({
+      name,
+      email,
+      password: hash,
+      manager,
+    });
 
-  const template: any = {
-    type: 'loginInfo',
-    data: { name, email, password }
+    const template: any = {
+      type: 'loginInfo',
+      data: { name, email, password },
+    };
+
+    res.json({ deliveryManager, password });
+    // send email
+    return await mail([email], template);
   }
-
-  res.json({ deliveryManager, password });
-  // send email
-  return await mail([email], template);
-});
+);
 
 // @route   POST api/manager/create/driver
 // @desc    Create new driver
 const createDriver = catchAsync(async (req: Request, res: Response) => {
+  console.log();
+
   const { name, email, vehicle } = req.body;
 
   // generate password
@@ -80,10 +91,16 @@ const createDriver = catchAsync(async (req: Request, res: Response) => {
   const hash = await passwordHash(password);
 
   // @ts-ignore
-  const manager = req.user._id;
+  const manager = req.session.user._id;
 
   // create new driver
-  const driver: IDriver = await Driver.create({ name, email, password: hash, vehicle, manager });
+  const driver: IDriver = await Driver.create({
+    name,
+    email,
+    password: hash,
+    vehicle,
+    manager,
+  });
 
   res.json({ driver, password });
 });
@@ -95,16 +112,15 @@ const getStats = catchAsync(async (req: Request, res: Response) => {
   const stats = await Driver.aggregate([
     {
       $project: {
-        total: { $sum: "$bonus.value" },
-        email: "$email",
-        name: "$name",
-        vehicle: "$vehicle",
-        dates: "$bonus",
-      }
-    }
-  ]).catch(_ => _);
+        total: { $sum: '$bonus.value' },
+        email: '$email',
+        name: '$name',
+        vehicle: '$vehicle',
+        dates: '$bonus',
+      },
+    },
+  ]).catch((_) => _);
   res.json(stats);
 });
-
 
 export { login, createDeliveryManager, createDriver, getStats };
